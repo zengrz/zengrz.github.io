@@ -1,0 +1,54 @@
+---
+layout: post
+title:  "You Only Look Once (YOLO)"
+date:   2018-08-04 15:00:00 -0400
+categories: jekyll update
+---
+## How Does YOLO Work?
+You Only Look Once[\[1\]][1] is an object detection algorithm based on CNN. It works by dividing the image under examination into equal-sized, non-overlapping _regions_, and determining if an object (which corresponds to a particular class) is present in the region.
+
+One way to achieve this to literally examined each region separately by considering the an larger _area_ containing the region. However, if two areas overlap, examining each region separately would require the algorithm to run its computation on the overlapped areas twice, incurring extra computation costs. Using local dependence property of CNN, YOLO algorithm reduces the volume of shared computation by making use of the association between each **element on the final layer of the CNN** and **its corresponding area** (its receptive field) on the original image[\[2\]][2]. As a result, one may draw conclusion about the information content on the area by examining the corresponding element on the last layer of the CNN. In this way, one can simply run the algorithm on the entire image, as oppose to examine each region on the image separately, eliminating the need for extra computation and achieving _you only look once_ for each region.
+
+## Components of YOLO Algorithm
+
+# The Bounding Box
+As the image is divided into equal-sized, non-overlapping regions, objects are assigned to a single region where the center of the object is located. One way to specify the midpoint is to specify it relative to the TLH coordinate of the region. A bounding box can be bigger than its containing region. This is possible because the receptive field of each element in the final layer contains information from the aforementioned area containing the region (the receptive field).
+
+# Intersection Over Union (IoU)
+IoU is a measure of overlap between two boxes. For two overalapping detection boxes, compute the IoU by area of intersection between the two boxes over area of union between the two boxes.
+
+# Non-max Suppression
+Non-max suppression for overlapping bounding boxes is a method to choose only the box with the highest probability from a set of overlapping bounding boxes which claim to have detected the object. It works by iteratively comparing bounding box identified by the algorithm against the groundtruth bounding box, and then selects the bounding box if it has the highest IoU with respect to the ground truth box. Non-maximum suppression is used together with IoU to ensure each object is detected only once.
+
+If there are more than one class, run non-max suppression for each class independently.
+
+# Anchor Boxes For Detecting Multiple Objects In The Same Region
+Anchor boxes are boxes of different shapes that correspond to shapes of bounding boxes of objects that one wish to detect using the algorithm. With bounding boxes, each object is assigned to not only a region containing the object's midpoint, but also an anchor box.
+
+# Output
+For each region, output a vector `y`.
+
+- If the algorithm is designed to detect only one class of object, one may use `y = [pc bx by bh bw]`.
+- If the algorithm is designed to detect more than one class, use `y = [pc bx by bh bw c]` where `c = c1 c2 ... cn`, `n = number of classes`.
+- If one wish to detect more than one object within each region using anchor boxes, use `y = [y1 y2 ... ym]`, where each `yk, k=1...m` represents an entire aforementioned output vector, and `m` is the number of anchor boxes.
+- If the object is not present `pc = 0`, then the algorithm would disregarde `bx, by, bh, bw, c1, ..., cm` values.
+
+When outputs of adjacent regions are placed next to each other by the order in which they appear on the image, one obtains a rank-3 tensor.
+
+Once the dimension of the final output is determined, it is pretty intuitive how each component is supposed to be used.
+
+# Code
+A keras implementation of the YOLO algorithm can be found [here][3]. Courtesy of [deeplearning.ai][4].
+
+## Thoughts
+By design, the greatest strength of YOLO algorithm is its speed, since it has to look at the image only once. The algorithm also tries to achieve (some sort of) equivariance between object size and bounding box size, which is always hard to achieve. It also introduced some other ideas like non-max suppression and anchor boxes, which in general can be useful for identification tasks.
+
+## References
+\[1\]: Sermanet et al., 2014, Overfeat: Integrated recognition, localization and detection using convolutional networks
+
+\[2\]: Redmon et al., 2015, You Only Look Once: Unified real-time object detection
+
+[1]:https://arxiv.org/pdf/1312.6229.pdf
+[2]:https://arxiv.org/pdf/1506.02640.pdf
+[3]:https://github.com/zengrz
+[4]:https://www.deeplearning.ai/

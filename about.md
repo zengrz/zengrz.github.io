@@ -3,13 +3,4 @@ layout: page
 title: About
 permalink: /about/
 ---
-
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
-
-You can find the source code for the Jekyll new theme at:
-{% include icon-github.html username="jglovier" %} /
-[jekyll-new](https://github.com/jglovier/jekyll-new)
-
-You can find the source code for Jekyll at
-{% include icon-github.html username="jekyll" %} /
-[jekyll](https://github.com/jekyll/jekyll)
+Hi. I blog about programming with a focus on machine learning. To keep the blog succinct, I will refrain from using elaborate examples (including code samples, equations). With that said, I will try to offer some insights for things I find confusing when learning about the concept in my posts. By the end of the post, I hope the reader will have a rough picture of the data flow of the algorithm. As a learner, I hope this blog offers some insights and inspirations.

@@ -1,4 +1,4 @@
-# zengrz.github.io
+## zengrz
 
 I blog about topics in machine learning, mostly computer vision.
 

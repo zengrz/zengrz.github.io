@@ -1,0 +1,34 @@
+---
+layout: post
+title:  "Understanding GAN Loss"
+date:   2018-08-20 15:00:00 -0400
+categories: jekyll update
+---
+## What is GAN
+The [Generative Adversarial Network][1] (GAN) is a generative network trained by adversarial learning. In the context of image generation, the generator `G` tries to produce "realistic" images, which become inputs into the discriminator `D`. The discriminator takes inputs from two sources, the set of images from the generator and the set of real images, in alternating fashion and tries to assign probabilities indicating if the input images are real. Intuitively, the generator will try to minimize the value function `V(D, G)`, not knowing how the discriminator will try to maximize it. So, the generator's strategy would be to pick lowest value that the discriminator will get among the possible maximum values for each of generator's choices. If the discriminator can no longer discriminate between real and generated images, training is completed. The situation is described by [equation 1][1].
+
+$$ \underset{G}{\mathrm{min}}\: \underset{D}{\mathrm{max}}\: V(D, G)=\operatorname{\mathbb{E}}_{x\sim P_{data}(x)}[\log D(x)] + \operatorname{\mathbb{E}}_{z\sim P_{z}(z)}[\log (1-D(G(z))] \tag{1} $$
+
+Here, $x$ is a real image. $z$ is an input to the generator, which is assumed to be a random element drawn from the latent space of the generator domain. To maximize `V(D, G)`, the discriminator ideally has to output a value of $D(x)=1$ when received a real image and a value of $D(G(z))=0$ when received a generated image. On the other hand, the generator only has influence on the second term. Thus it has to prevent the discriminator from maximize the term on the right by maximizing the term $D(G(z))$, achieved by producing images that resemble real images.
+
+## Comparison to Categorical Cross-Entropy
+Recall that the categorical cross-entropy is given by [equation 2][2]:
+
+$$ H(p, q)=-\sum_xp(x)\log q(x) \tag{2} $$
+
+When there are only two categories (ie. $p\in\\{y, 1-y\\}$, $q\in\\{\hat{y}, 1-\hat{y}\\}$), the equation devolves into logistic regression described by the following equation:
+
+$$ H(p, q)=-\big(y\log(\hat{y})+(1-y)\log(1-\hat{y})\big) \tag{3} $$
+
+If the label is `1` (image is real), the we would like $\hat{y}=1$ to be our discriminator output. Otherwise, `0`. Instead of a single label $y$, we now have a distribution whose value depends on source of data as the label. The value function is calculated by taking the weighted average/expectation over the distribution. Also, the estimated probability $\hat{y}$ is the output of the discriminator, which corresponds to the classical discriminator output. Without the negative sign, there is a 'bijection' between equation 2 and equation 1. So GAN loss is **equivalent** to categorical cross-entropy loss when the label is the data source.
+
+## Thoughts
+The biggest contribution of GAN, IMO, is that it emulates a potentially complicated/unknown cost function using a generic neural network. In this case, we are interested in generating good images, but proper metrics to define what a good image is. As a result, the discriminator network is introduced. One can imagine that we can substitute the generator for any other type of network, and this indeed is the idea behind adversarial training.
+
+## Maximin vs Minimax
+$\underset{I}{\mathrm{max}}\; \underset{he}{\mathrm{min}} V(he, I)$: "I do not know what the other player is doing, but he is definitely trying to minimize my value. So, I make my decision to maximize my gain out of these minimum values that I wil get for each of his choices."
+
+$\underset{I}{\mathrm{min}}\; \underset{he}{\mathrm{max}} V(he, I)$: "I do not know what the other player is doing, but he is definitely trying to maximize his value. So, I make my decision to minimize his gain out of these maximum values that he will get for each of my choices."
+
+[1]:https://arxiv.org/pdf/1406.2661.pdf
+[2]:https://en.wikipedia.org/wiki/Cross_entropy

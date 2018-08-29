@@ -1,0 +1,44 @@
+---
+layout: post
+title:  "Neural Style Transfer"
+date:   2018-08-20 15:00:00 -0400
+categories: jekyll update
+---
+
+<!--
+![image-title-here](/path/to/image.jpg){:class="img-responsive"}
+-->
+
+## What is NST
+The popular [Neural Style Transfer][1] (NST) is a generative network used to apply a style of an image to an image of choice using a pretrained neural network. This approach differs from traditional style transfer algorithms in that it tries to extract semantic information from the style image from a high-performing, pretrained neural network and apply the information to the target image. Since any pretrained CNN can be used as the reference model, the algorithm provides a low cost method to quickly generate a variety of results.
+
+## Loss Functions
+The impressive performance of this algorithm is due to definitions of content and style representations. The total loss function is a linear combination of both content and style losses given by equation 1. Note the $\alpha$ associated with the content loss works as a relative loss with respect to the style loss.
+
+$$ \mathit{L}_{total}(\vec{p}, \vec{a}, \vec{x}) = \alpha\mathit{L}_{content}(\vec{p}, \vec{x}) + \mathit{L}_{style}(\vec{a},\vec{x}) \tag{1} $$
+
+## Content Loss
+$$ \mathit{L}_{content}(\vec{p},\vec{x},l)=\frac{1}{2}\sum_{i,j}(F_{ij}^l-P_{ij}^l)^2 \tag{2} $$
+
+In the equation above, $\vec{p}$ and $\vec{x}$ are the original image and generated image, while $P^l$ and $F^l$ are their respective output at layer $l$ of the chosen neural network. This function measures the feature level differences betwen the two images extract by the network. For lower $l$'s, the loss function measures differences in pixel values and in higher $l$'s the function measures difference in high-level features.
+
+## Style loss
+$$ \mathit{L}_{style}(\vec{a},\vec{x})=\sum_{l=0}^L w_lE_l \tag{3} $$
+
+From equation 3, we see that the style loss is given in terms of a linear combination of the function $E_l$. Each $E_l$ represents the style loss at one of the chosen layers $l$, given by equation 4.
+
+$$ E_l = \frac{1}{4N_l^2M_l^2}\sum_{i,j}(G_{ij}^l-A_{ij}^l)^2 \tag{4} $$
+
+where $G^l$ and $A^l$ are Gram matrices (equation 5) computed using the outputs at one of the chosen levels $l$.
+
+$$ G_{ij}^l=\sum_{k}F_{ik}^lF_{jk}^l \tag{5} $$
+
+Each entry in the gram matrix is the dot product/cross-correlation (auto-aurrelation for entries along the diagonal) between the corresponding channels, and it measures the similiarity between the two channels. Since each $E_l$ measures the style loss at layer $l$, two images have 'similiar' styles at layer $l$ if the cross-channel differences have similar patterns.
+
+## Image Generation
+To generate the image, the algorithm freezes the pretrained network and sets the input as variable containing random noise. In each iteration, the input will be updated. One may want to get outputs at various stages of training to extract results that are you find useful or interesting.
+
+## Thoughts
+I like the novel use of gradient descent to update the output. Further, the output encodes information from not only the style and the content images, but also the model itself. This an alternative way to investigate the features learned by a model if we change the model while retaining the images. It would be intereting to see how this method of training can effectively applied to areas other than texture generation.
+
+[1]:https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf

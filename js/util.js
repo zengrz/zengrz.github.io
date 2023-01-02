@@ -55,7 +55,7 @@ function ColumnChar(ctx, idx, ch, fontSize, textColumn) {
     let alpha = getAlpha(this.textColumn.z);
     if (cond) {
       var fillStyle = ctx.fillStyle;
-      ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
       var oldfont = ctx.font;
       ctx.font = "15px serif";
       ctx.fillText(this.ch, this.getX(), this.getY());

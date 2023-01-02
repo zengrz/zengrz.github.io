@@ -31,7 +31,6 @@ function DropText(ctx, ch, sz, x, y, z, vx, vy, vz) {
     ctx.font = `bold ${this.sz}px serif`;
 
     ctx.fillText(this.ch, this.x, this.y);
-    // ctx.strokeText(this.ch, this.x, this.y);
 
     ctx.fillStyle = fillStyle;
     ctx.font = oldfont;
